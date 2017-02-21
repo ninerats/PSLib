@@ -6,6 +6,8 @@
 #											           Core
 ################################################################################################################################
 
+
+
 function Get-PSLibPath
 {
 	"D:\PSLib"
@@ -119,3 +121,38 @@ param (
 	  # exit
 	}
 }
+
+
+################################################################################################################################
+#											           Security
+################################################################################################################################
+
+
+function Set-MyCredential
+{
+	Param(
+		$UserName = $env:UserName,
+		$ComputerName = $env:ComputerName,
+		$FileNameTemplate = "d:\dev\{0}-{1}-creds.txt"
+	)
+	$File = $FileNameTemplate -f $ComputerName, $UserName
+	$Credential = Get-Credential ("$ComputerName\$UserName")
+	$credential.Password | ConvertFrom-SecureString | Set-Content $File
+}
+
+function Get-MyCredential
+{
+	[CmdletBinding()]
+	Param(
+		$UserName = $env:UserName,
+		$ComputerName = $env:ComputerName,
+		$FileNameTemplate = "d:\dev\{0}-{1}-creds.txt"
+	)
+	$File = $FileNameTemplate -f $ComputerName, $UserName
+	$password = Get-Content $File | ConvertTo-SecureString 
+	$credential = New-Object System.Management.Automation.PsCredential($UserName,$password)
+	$credential
+}
+
+
+Write-Host "Craftsmaneer-Main module has been imported."
